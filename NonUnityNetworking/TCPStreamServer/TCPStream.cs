@@ -4,11 +4,12 @@ using System.Net.Sockets;
 
 namespace TCPStreamServer {
   class TCPStream {
-    public const int MAX_CLIENTS = 100;
-
     public TcpListener streamSocket;
+    public Client[] clients;
 
-    public ClientData[] clients = new ClientData[MAX_CLIENTS];
+    public TCPStream(Client[] clientsArray) {
+      clients = clientsArray;
+    }
 
     public void startStream(int streamPort) {
       streamSocket = new TcpListener(IPAddress.Any, streamPort);
@@ -23,7 +24,7 @@ namespace TCPStreamServer {
       // After accepting the client connection, start listening for more client connections
       streamSocket.BeginAcceptTcpClient(acceptedTcpClient, null);
 
-      for (int i = 0; i < clients.Length; ++i) {
+      for (int i = 0; i < clients.Length; i++) {
         if (clients[i] == null) {
           clients[i].connection = connectedClient;
           clients[i].id = i;
@@ -34,11 +35,6 @@ namespace TCPStreamServer {
       }
 
       Console.WriteLine("ERROR: Out of client connections!!!");
-
-
     }
-
-
-
   }
 }

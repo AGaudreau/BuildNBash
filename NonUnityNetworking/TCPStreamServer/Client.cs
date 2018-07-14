@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 
 namespace TCPStreamServer {
-  class ClientData {
+  class Client {
     public const int BUFFER_SIZE = 4096;
     public int id;
     public string ip;
