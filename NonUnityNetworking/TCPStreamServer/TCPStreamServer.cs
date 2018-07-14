@@ -10,11 +10,15 @@ namespace TCPStreamServer {
     static public Client[] clients = new Client[MAX_CLIENTS];
 
     static void Main(string[] args) {
+
+      TCPStream stream = new TCPStream(clients);
+      int connectionPort = 5555;
+      stream.startStream(connectionPort);
+
+      Array.Clear(clients, 0, clients.Length);
+
       // Main server loop
-      while(true) {
-        TCPStream stream = new TCPStream(clients);
-        int connectionPort = 5555;
-        stream.startStream(connectionPort);
+      while (true) {
         
         if (Console.ReadKey().Key == ConsoleKey.Escape)
           break;

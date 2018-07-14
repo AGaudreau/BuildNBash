@@ -25,8 +25,10 @@ namespace TCPStreamServer {
       try {
         int readBytes = stream.EndRead(result);
         // If we got no data, return
-        if (readBytes <= 0)
+        if (readBytes <= 0) {
+          closeConnection();
           return;
+        }
 
         byte[] newBytes = new byte[readBytes];
         Buffer.BlockCopy(readBuffer, 0, newBytes, 0, readBytes);
@@ -34,11 +36,14 @@ namespace TCPStreamServer {
         // Got data from the client, start listening for more data
         stream.BeginRead(readBuffer, 0, BUFFER_SIZE, recieveDataFromClient, null);
 
-
-
       } catch (Exception) {
-        throw;
+        closeConnection();
       }
+    }
+
+    private void closeConnection() {
+      connection.Close();
+      stream.Close();
     }
 
   }
