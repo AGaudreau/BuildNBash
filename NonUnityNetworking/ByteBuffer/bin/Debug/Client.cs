@@ -3,34 +3,16 @@ using System.Net.Sockets;
 using System.Net;
 using UnityEngine;
 
-
-class Client : MonoBehaviour {
-
-  public static Client instance;
-
+class Client {
   static int BUFFER_SIZE = 4096;
   public TcpClient connection;
   public NetworkStream stream;
   private byte[] asyncBuffer;
   public bool isConnected;
 
-  public byte[] recieveBytes;
-  public bool handleData = false;
-
-
   private string IP_ADDRESS = "127.0.0.1"; // Local host
   private int PORT = 5555;
 
-  private void Awake() {
-    instance = this;
-  }
-
-  private void Update() {
-    if (handleData == true) {
-      MessageHandler.handleData(recieveBytes);
-      handleData = false;
-    }
-  }
 
   public void connect() {
     Debug.Log("Attempting to connect to server");
@@ -72,39 +54,8 @@ class Client : MonoBehaviour {
 
   private void onReceiveData(IAsyncResult result) {
     try {
-      int packetLength = stream.EndRead(result);
-      recieveBytes = new byte[packetLength];
-      Buffer.BlockCopy(asyncBuffer, 0, recieveBytes, 0, packetLength);
-
-      if (packetLength == 0) {
-        Debug.Log("Disconnected.");
-        Application.Quit();
-        return;
-      }
-
-      //Client.
-      handleData = true;
-      stream.BeginRead(asyncBuffer, 0, 8192, onReceiveData, null);
 
     } catch (Exception) {
-      Debug.Log("Disconnected.");
-      Application.Quit();
-      return;
     }
-  }
-
-  public void sendData(byte[] data) {
-    ByteBuffer buffer = new ByteBuffer();
-    buffer.writeLong(data.GetUpperBound(0) - data.GetLowerBound(0) + 1);
-    buffer.writeBytes(data);
-    stream.Write(buffer.toArray(), 0, buffer.toArray().Length);
-  }
-
-
-  public void send(byte[] data) {
-    ByteBuffer buffer = new ByteBuffer();
-    //buffer.writeLong(typeOfMessage);
-    //
-    sendData(buffer.toArray());
   }
 }

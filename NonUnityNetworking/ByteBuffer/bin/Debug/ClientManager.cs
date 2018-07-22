@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ClientManager : MonoBehaviour {
+  private Client client;
 
   void Start() {
     DontDestroyOnLoad(this);
-    Client.instance.connect();
+    client = new Client();
+    client.connect();
   }
 
   private void OnApplicationQuit() {
-    Client.instance.connection.Close();
+    client.connection.Close();
   }
 
   // Update is called once per frame
