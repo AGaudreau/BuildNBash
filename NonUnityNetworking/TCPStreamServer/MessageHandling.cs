@@ -5,24 +5,37 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace TCPStreamServer {
-  class MessageHandler {
-    private delegate void handleMessage(long connectionId, byte[] data);
-    private static Dictionary<long, handleMessage> handlers = new Dictionary<long, handleMessage>();
+
+  // Test message handler
+  public class TestMessageHandler : IMessageHandler {
+    public TestMessageHandler() {
+      MessageHandlerDelegate = handleMessage;
+    }
+    public static void handleMessage(long connectionId, byte[] data) {
+      Console.WriteLine("TestMessageHandler: Message received from (" + connectionId.ToString() + " ).");
+    }
+  }
+
+  class MessageHandling {
+    private static Dictionary<uint, IMessageHandler> messageHandlers = new Dictionary<uint, IMessageHandler>();
     private static long packetLength;
 
     public static void init() {
-      long TESTING = 1;
-      handlers.Add(TESTING, TEST_HANDLER);
+      registerMessageHandler(new TestMessageHandler());
     }
 
+    public static void registerMessageHandler(IMessageHandler handler) {
+      uint handlerId = handler.getHandlerId();
+      messageHandlers.Add(handlerId, handler);
+    }
 
     public static void handleData(long clientId, byte[] data) {
       byte[] dataBuffer = (byte[])data.Clone();
 
-
       if (TCPStream.clients[clientId].buffer == null) {
         TCPStream.clients[clientId].buffer = new ByteBuffer();
       }
+
       ByteBuffer clientBuffer = TCPStream.clients[clientId].buffer;
       clientBuffer.writeBytes(dataBuffer);
 
@@ -61,33 +74,20 @@ namespace TCPStreamServer {
           clientBuffer.clear();
         }
       }
-
     }
 
     private static void handleDataPackets(long clientId, byte[] data) {
       long packetId;
       ByteBuffer buffer = new ByteBuffer();
-      handleMessage handler;
+      IMessageHandler handler;
 
       buffer.writeBytes(data);
       packetId = buffer.readLong();
       buffer.Dispose();
 
-      if (handlers.TryGetValue(packetId, out handler)) {
-        handler.Invoke(clientId, data);
+      if (messageHandlers.TryGetValue((uint)packetId, out handler)) {
+        handler.MessageHandlerDelegate.Invoke(clientId, data);
       }
-
     }
-
-    private static void TEST_HANDLER(long clientId, byte[] data) {
-      ByteBuffer buffer = new ByteBuffer();
-      buffer.writeBytes(data);
-
-      long messageType = buffer.readLong();
-
-      // read other crap from the buffer.
-
-    }
-
   }
 }

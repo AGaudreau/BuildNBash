@@ -34,7 +34,7 @@ namespace TCPStreamServer {
         byte[] newBytes = new byte[readBytes];
         Buffer.BlockCopy(readBuffer, 0, newBytes, 0, readBytes);
 
-        MessageHandler.handleData(id, newBytes);
+        MessageHandling.handleData(id, newBytes);
 
         // Got data from the client, start listening for more data
         stream.BeginRead(readBuffer, 0, BUFFER_SIZE, recieveDataFromClient, null);
