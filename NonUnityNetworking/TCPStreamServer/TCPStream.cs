@@ -29,15 +29,11 @@ namespace TCPStreamServer {
 
       for (int i = 0; i < clients.Length; ++i) {
         if (clients[i] == null) {
+          clients[i] = new Client();
           clients[i].connection = connectedClient;
           clients[i].id = i;
           clients[i].ip = connectedClient.Client.RemoteEndPoint.ToString();
           clients[i].Start();
-
-
-          // TODO remove this testing send
-          send(clients[i].id);
-
           return;
         }
       }
@@ -46,7 +42,7 @@ namespace TCPStreamServer {
     }
 
 
-    public void sendDataTo(int clientId, byte[] data) {
+    private void sendDataTo(int clientId, byte[] data) {
       ByteBuffer buffer = new ByteBuffer();
       buffer.writeLong(data.GetUpperBound(0 - data.GetLowerBound(0)) + 1);
       buffer.writeBytes(data);
@@ -54,14 +50,8 @@ namespace TCPStreamServer {
     }
 
 
-
-    public void send(int clientId) {
-      ByteBuffer buffer = new ByteBuffer();
-      //buffer.writeString();
-
-      // This function needs to call a function to send a given message
-
-      sendDataTo(clientId, buffer.toArray());
+    public void send(int clientId, IMessage messageToSend) {
+      sendDataTo(clientId, messageToSend.toBytes());
     }
   }
 }

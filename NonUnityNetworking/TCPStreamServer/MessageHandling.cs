@@ -6,27 +6,38 @@ using System.Threading.Tasks;
 
 namespace TCPStreamServer {
 
-  // Test message handler
-  public class TestMessageHandler : IMessageHandler {
-    public TestMessageHandler() {
-      MessageHandlerDelegate = handleMessage;
-    }
-    public static void handleMessage(long connectionId, byte[] data) {
-      Console.WriteLine("TestMessageHandler: Message received from (" + connectionId.ToString() + " ).");
-    }
-  }
-
   class MessageHandling {
-    private static Dictionary<uint, IMessageHandler> messageHandlers = new Dictionary<uint, IMessageHandler>();
+
+    private static Dictionary<uint, IMessageMaker> messageMakers = new Dictionary<uint, IMessageMaker>();
+    private static Dictionary<uint, IMessageHandlers> messageHandlers = new Dictionary<uint, IMessageHandlers>();
     private static long packetLength;
 
     public static void init() {
-      registerMessageHandler(new TestMessageHandler());
+      registerMessageHandler<TestMessage>(TestMessageHandler.handleMessage);
+      registerMessageMaker<TestMessage>(new TestMessageMaker());
     }
 
-    public static void registerMessageHandler(IMessageHandler handler) {
-      uint handlerId = handler.getHandlerId();
-      messageHandlers.Add(handlerId, handler);
+    public static void registerMessageMaker<messageType>(IMessageMaker msgMaker) {
+      Console.WriteLine("Registering maker for: " + typeof(messageType).Name);
+      uint handlerId = IMessage.getMessageId<messageType>();
+      messageMakers.Add(handlerId, msgMaker);
+      Console.WriteLine("Finished registering maker.");
+    }
+
+    public static void registerMessageHandler<messageType>(MessageHandler msgHandler) {
+      Console.WriteLine("Registering handler for: " + typeof(messageType).Name);
+      uint handlerId = IMessage.getMessageId<messageType>();
+
+      IMessageHandlers msgHandlers;
+      if (!messageHandlers.TryGetValue((uint)handlerId, out msgHandlers)) {
+        Console.WriteLine("Creating new handlers");
+        msgHandlers = new IMessageHandlers();
+        messageHandlers.Add(handlerId, msgHandlers);
+      }
+
+      msgHandlers.addHandler(msgHandler);
+      Console.WriteLine("Adding new handler delegate. \nFinished registering handler.");
+
     }
 
     public static void handleData(long clientId, byte[] data) {
@@ -79,14 +90,22 @@ namespace TCPStreamServer {
     private static void handleDataPackets(long clientId, byte[] data) {
       long packetId;
       ByteBuffer buffer = new ByteBuffer();
-      IMessageHandler handler;
+      IMessageHandlers msgHandler;
+      IMessageMaker msgMaker;
 
       buffer.writeBytes(data);
       packetId = buffer.readLong();
       buffer.Dispose();
-
-      if (messageHandlers.TryGetValue((uint)packetId, out handler)) {
-        handler.MessageHandlerDelegate.Invoke(clientId, data);
+            
+      if (messageMakers.TryGetValue((uint)packetId, out msgMaker)) {
+        IMessage message = msgMaker.fromBytes(data);
+        if (messageHandlers.TryGetValue((uint)packetId, out msgHandler)) {
+          msgHandler.handleMessage(clientId, message);
+        } else {
+          Console.WriteLine("We recieved a message who's handler was not registered.");
+        }
+      } else {
+        Console.WriteLine("We recieved a message who's maker was not registered.");
       }
     }
   }

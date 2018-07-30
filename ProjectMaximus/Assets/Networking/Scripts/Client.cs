@@ -82,7 +82,6 @@ class Client : MonoBehaviour {
         return;
       }
 
-      //Client.
       handleData = true;
       stream.BeginRead(asyncBuffer, 0, 8192, onReceiveData, null);
 
@@ -98,13 +97,5 @@ class Client : MonoBehaviour {
     buffer.writeLong(data.GetUpperBound(0) - data.GetLowerBound(0) + 1);
     buffer.writeBytes(data);
     stream.Write(buffer.toArray(), 0, buffer.toArray().Length);
-  }
-
-
-  public void send(byte[] data) {
-    ByteBuffer buffer = new ByteBuffer();
-    //buffer.writeLong(typeOfMessage);
-    //
-    sendData(buffer.toArray());
   }
 }

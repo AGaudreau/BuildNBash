@@ -17,9 +17,8 @@ public class MessageHandler : MonoBehaviour {
   }
 
   private static void init() {
-    long TESTING = 1;
 
-    handlers.Add((long)TESTING, receiveTesting);
+    handlers.Add(IMessage.getMessageId<TestMessage>(), receiveTesting);
   }
 
   public static void handleData(byte[] data) {
@@ -46,7 +45,7 @@ public class MessageHandler : MonoBehaviour {
     }
 
     while (packetLength > 0 && packetLength <= packerBuffer.length() - 8) {
-      if (packetLength <-packerBuffer.length() - 8) {
+      if (packetLength <= packerBuffer.length() - 8) {
         packerBuffer.readLong();
         data = packerBuffer.readBytes((int)packetLength);
         handleDataPackets(data);
@@ -54,14 +53,12 @@ public class MessageHandler : MonoBehaviour {
 
       if (packerBuffer.length() >= 8) {
         packetLength = packerBuffer.readLong(false);
-
         if (packetLength < 0) {
           packerBuffer.clear();
           return;
         }
       }
     }
-
   }
 
   private static void handleDataPackets(byte[] data) {
@@ -85,10 +82,14 @@ public class MessageHandler : MonoBehaviour {
 
     long packetIdentifier = buffer.readLong();
 
-    // get data = buffer.readX();
+    string messageData = buffer.readString();
+    int testing = messageData.Length;
+    buffer.clear();
 
+    TestMessage response = new TestMessage("I see your test message and raise you one test message.");
 
-
+    buffer.writeBytes(response.toBytes());
+    Client.instance.sendData(buffer.toArray());
   }
 
 }
