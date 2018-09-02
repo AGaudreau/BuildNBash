@@ -9,7 +9,7 @@ namespace TCPStreamServer {
   class MessageHandling {
 
     private static Dictionary<uint, IMessageMaker> messageMakers = new Dictionary<uint, IMessageMaker>();
-    private static Dictionary<uint, IMessageHandlers> messageHandlers = new Dictionary<uint, IMessageHandlers>();
+    private static Dictionary<uint, MessageHandlers> messageHandlers = new Dictionary<uint, MessageHandlers>();
     private static long packetLength;
 
     public static void init() {
@@ -28,10 +28,10 @@ namespace TCPStreamServer {
       Console.WriteLine("Registering handler for: " + typeof(messageType).Name);
       uint handlerId = IMessage.getMessageId<messageType>();
 
-      IMessageHandlers msgHandlers;
+      MessageHandlers msgHandlers;
       if (!messageHandlers.TryGetValue((uint)handlerId, out msgHandlers)) {
         Console.WriteLine("Creating new handlers");
-        msgHandlers = new IMessageHandlers();
+        msgHandlers = new MessageHandlers();
         messageHandlers.Add(handlerId, msgHandlers);
       }
 
@@ -90,7 +90,7 @@ namespace TCPStreamServer {
     private static void handleDataPackets(long clientId, byte[] data) {
       long packetId;
       ByteBuffer buffer = new ByteBuffer();
-      IMessageHandlers msgHandler;
+      MessageHandlers msgHandler;
       IMessageMaker msgMaker;
 
       buffer.writeBytes(data);

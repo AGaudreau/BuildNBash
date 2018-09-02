@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 public delegate void MessageHandler(long connectionId, IMessage msg);
 
-public class IMessageHandlers {
+public class MessageHandlers {
   List<MessageHandler> handlers = new List<MessageHandler>();
 
   public void addHandler(MessageHandler msgHandler) {

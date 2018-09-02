@@ -17,7 +17,6 @@ class Client : MonoBehaviour {
   public byte[] recieveBytes;
   public bool handleData = false;
 
-
   private string IP_ADDRESS = "127.0.0.1"; // Local host
   private int PORT = 5555;
 
@@ -27,7 +26,7 @@ class Client : MonoBehaviour {
 
   private void Update() {
     if (handleData == true) {
-      MessageHandler.handleData(recieveBytes);
+      MessageHandling.handleData(recieveBytes);
       handleData = false;
     }
   }
@@ -92,10 +91,14 @@ class Client : MonoBehaviour {
     }
   }
 
-  public void sendData(byte[] data) {
+  private void sendData(byte[] data) {
     ByteBuffer buffer = new ByteBuffer();
     buffer.writeLong(data.GetUpperBound(0) - data.GetLowerBound(0) + 1);
     buffer.writeBytes(data);
     stream.Write(buffer.toArray(), 0, buffer.toArray().Length);
+  }
+
+  public void send(IMessage messageToSend) {
+    sendData(messageToSend.toBytes());
   }
 }
