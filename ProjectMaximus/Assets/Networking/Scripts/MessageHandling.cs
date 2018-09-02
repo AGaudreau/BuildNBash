@@ -13,17 +13,17 @@ public class MessageHandling : MonoBehaviour {
   private static long packetLength;
 
   private void Awake() {
-    init();
+    Init();
   }
 
-  private static void init() {
-    registerMessageHandler<TestMessage>(TestMessageHandler.handleMessage);
-    registerMessageMaker<TestMessage>(new TestMessageMaker());
+  private static void Init() {
+    RegisterMessageHandler<TestMessage>(TestMessageHandler.HandleMessage);
+    RegisterMessageMaker<TestMessage>(new TestMessageMaker());
   }
 
-  public static void registerMessageHandler<messageType>(MessageHandler msgHandler) {
+  public static void RegisterMessageHandler<messageType>(MessageHandler msgHandler) {
     //Console.WriteLine("Registering handler for: " + typeof(messageType).Name);
-    uint handlerId = IMessage.getMessageId<messageType>();
+    uint handlerId = IMessage.GetMessageId<messageType>();
     
     MessageHandlers msgHandlers;
     if (!messageHandlers.TryGetValue((uint)handlerId, out msgHandlers)) {
@@ -32,18 +32,18 @@ public class MessageHandling : MonoBehaviour {
       messageHandlers.Add(handlerId, msgHandlers);
     }
     
-    msgHandlers.addHandler(msgHandler);
+    msgHandlers.AddHandler(msgHandler);
     //Console.WriteLine("Adding new handler delegate. \nFinished registering handler.");
   }
 
-  public static void registerMessageMaker<messageType>(IMessageMaker msgMaker) {
+  public static void RegisterMessageMaker<messageType>(IMessageMaker msgMaker) {
     //Console.WriteLine("Registering maker for: " + typeof(messageType).Name);
-    uint handlerId = IMessage.getMessageId<messageType>();
+    uint handlerId = IMessage.GetMessageId<messageType>();
     messageMakers.Add(handlerId, msgMaker);
     //Console.WriteLine("Finished registering maker.");
   }
 
-  public static void handleData(byte[] data) {
+  public static void HandleData(byte[] data) {
     byte[] buffer = (byte[])data.Clone();
 
 
@@ -52,51 +52,51 @@ public class MessageHandling : MonoBehaviour {
     }
 
 
-    packerBuffer.writeBytes(buffer);
-    if (packerBuffer.count() == 0) {
-      packerBuffer.clear();
+    packerBuffer.WriteBytes(buffer);
+    if (packerBuffer.Count() == 0) {
+      packerBuffer.Clear();
       return;
     }
 
-    if (packerBuffer.length() >= 8) {
-      packetLength = packerBuffer.readLong(false);
+    if (packerBuffer.Length() >= 8) {
+      packetLength = packerBuffer.ReadLong(false);
       if (packetLength < 0) {
-        packerBuffer.clear();
+        packerBuffer.Clear();
         return;
       }
     }
 
-    while (packetLength > 0 && packetLength <= packerBuffer.length() - 8) {
-      if (packetLength <= packerBuffer.length() - 8) {
-        packerBuffer.readLong();
-        data = packerBuffer.readBytes((int)packetLength);
-        handleDataPackets(data);
+    while (packetLength > 0 && packetLength <= packerBuffer.Length() - 8) {
+      if (packetLength <= packerBuffer.Length() - 8) {
+        packerBuffer.ReadLong();
+        data = packerBuffer.ReadBytes((int)packetLength);
+        HandleDataPackets(data);
       }
 
-      if (packerBuffer.length() >= 8) {
-        packetLength = packerBuffer.readLong(false);
+      if (packerBuffer.Length() >= 8) {
+        packetLength = packerBuffer.ReadLong(false);
         if (packetLength < 0) {
-          packerBuffer.clear();
+          packerBuffer.Clear();
           return;
         }
       }
     }
   }
 
-  private static void handleDataPackets(byte[] data) {
+  private static void HandleDataPackets(byte[] data) {
     long packetId;
     ByteBuffer buffer = new ByteBuffer();
     MessageHandlers msgHandler;
     IMessageMaker msgMaker;
 
-    buffer.writeBytes(data);
-    packetId = buffer.readLong();
+    buffer.WriteBytes(data);
+    packetId = buffer.ReadLong();
     buffer.Dispose();
 
     if (messageMakers.TryGetValue((uint)packetId, out msgMaker)) {
-      IMessage message = msgMaker.fromBytes(data);
+      IMessage message = msgMaker.FromBytes(data);
       if (messageHandlers.TryGetValue((uint)packetId, out msgHandler)) {
-        msgHandler.handleMessage(message);
+        msgHandler.HandleMessage(message);
       } else {
         //Console.WriteLine("We recieved a message who's handler was not registered.");
       }

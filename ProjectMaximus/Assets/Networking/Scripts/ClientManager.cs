@@ -6,7 +6,7 @@ public class ClientManager : MonoBehaviour {
 
   void Start() {
     DontDestroyOnLoad(this);
-    Client.instance.connect();
+    Client.instance.Connect();
   }
 
   private void OnApplicationQuit() {

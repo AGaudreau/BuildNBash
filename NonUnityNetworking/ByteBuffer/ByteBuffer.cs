@@ -18,52 +18,52 @@ public class ByteBuffer: IDisposable
   }
 
   // utility functions
-  public long getReadPosition() {
+  public long GetReadPosition() {
     return readPosition;
   }
-  public byte[] toArray() {
+  public byte[] ToArray() {
     return buffer.ToArray();
   }
-  public int count() {
+  public int Count() {
     return buffer.Count;
   }
-  public int length() {
-    return count() - readPosition;
+  public int Length() {
+    return Count() - readPosition;
   }
-  public void clear() {
+  public void Clear() {
     buffer.Clear();
     readPosition = 0;
   }
 
   // Write methods
-  public void writeBytes(byte[] input) {
+  public void WriteBytes(byte[] input) {
     buffer.AddRange(input);
     bufferUpdated = true;
   }
-  public void writeShort(short input) {
+  public void WriteShort(short input) {
     buffer.AddRange(BitConverter.GetBytes(input));
     bufferUpdated = true;
   }
-  public void writeInteger(int input) {
+  public void WriteInteger(int input) {
     buffer.AddRange(BitConverter.GetBytes(input));
     bufferUpdated = true;
   }
-  public void writeFloat(float input) {
+  public void WriteFloat(float input) {
     buffer.AddRange(BitConverter.GetBytes(input));
     bufferUpdated = true;
   }
-  public void writeLong(long input) {
+  public void WriteLong(long input) {
     buffer.AddRange(BitConverter.GetBytes(input));
     bufferUpdated = true;
   }
-  public void writeString(string input) {
+  public void WriteString(string input) {
     buffer.AddRange(BitConverter.GetBytes(input.Length));
     buffer.AddRange(Encoding.ASCII.GetBytes(input));
     bufferUpdated = true;
   }
 
   // Read methods
-  public int readInteger(bool peek = true) {
+  public int ReadInteger(bool peek = true) {
     if (buffer.Count > readPosition) {
       if (bufferUpdated) {
         readBuffer = buffer.ToArray();
@@ -78,7 +78,7 @@ public class ByteBuffer: IDisposable
       throw new Exception("Byte buffer is past limit");
     }
   }
-  public byte[] readBytes(int length, bool peek = true) {
+  public byte[] ReadBytes(int length, bool peek = true) {
     if (bufferUpdated) {
       readBuffer = buffer.ToArray();
       bufferUpdated = false;
@@ -90,8 +90,8 @@ public class ByteBuffer: IDisposable
 
     return returnValue;
   }
-  public string readString(bool peek = true) {
-    int length = readInteger(true);
+  public string ReadString(bool peek = true) {
+    int length = ReadInteger(true);
     if (bufferUpdated) {
       readBuffer = buffer.ToArray();
       bufferUpdated = false;
@@ -103,7 +103,7 @@ public class ByteBuffer: IDisposable
     }
     return returnValue;
   }
-  public short readShort(bool peek = true) {
+  public short ReadShort(bool peek = true) {
     if (buffer.Count > readPosition) {
       if (bufferUpdated) {
         readBuffer = buffer.ToArray();
@@ -118,7 +118,7 @@ public class ByteBuffer: IDisposable
       throw new Exception("Byte buffer is past limit");
     }
   }
-  public float readFloat(bool peek = true) {
+  public float ReadFloat(bool peek = true) {
     if (buffer.Count > readPosition) {
       if (bufferUpdated) {
         readBuffer = buffer.ToArray();
@@ -133,7 +133,7 @@ public class ByteBuffer: IDisposable
       throw new Exception("Byte buffer is past limit");
     }
   }
-  public long readLong(bool peek = true) {
+  public long ReadLong(bool peek = true) {
     if (buffer.Count > readPosition) {
       if (bufferUpdated) {
         readBuffer = buffer.ToArray();
@@ -150,7 +150,7 @@ public class ByteBuffer: IDisposable
   }
 
   // IDisposable methods
-  protected virtual void dispose(bool disposing) {
+  protected virtual void Dispose(bool disposing) {
     if (!disposedValue) {
       if (disposing) {
         buffer.Clear();
@@ -161,7 +161,7 @@ public class ByteBuffer: IDisposable
     disposedValue = true;
   }
   public void Dispose() {
-    dispose(true);
+    Dispose(true);
     GC.SuppressFinalize(this);
   }
 }

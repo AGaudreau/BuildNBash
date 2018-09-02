@@ -12,21 +12,21 @@ namespace TCPStreamServer {
     private static Dictionary<uint, MessageHandlers> messageHandlers = new Dictionary<uint, MessageHandlers>();
     private static long packetLength;
 
-    public static void init() {
-      registerMessageHandler<TestMessage>(TestMessageHandler.handleMessage);
-      registerMessageMaker<TestMessage>(new TestMessageMaker());
+    public static void Init() {
+      RegisterMessageHandler<TestMessage>(TestMessageHandler.HandleMessage);
+      RegisterMessageMaker<TestMessage>(new TestMessageMaker());
     }
 
-    public static void registerMessageMaker<messageType>(IMessageMaker msgMaker) {
+    public static void RegisterMessageMaker<messageType>(IMessageMaker msgMaker) {
       Console.WriteLine("Registering maker for: " + typeof(messageType).Name);
-      uint handlerId = IMessage.getMessageId<messageType>();
+      uint handlerId = IMessage.GetMessageId<messageType>();
       messageMakers.Add(handlerId, msgMaker);
       Console.WriteLine("Finished registering maker.");
     }
 
-    public static void registerMessageHandler<messageType>(MessageHandler msgHandler) {
+    public static void RegisterMessageHandler<messageType>(MessageHandler msgHandler) {
       Console.WriteLine("Registering handler for: " + typeof(messageType).Name);
-      uint handlerId = IMessage.getMessageId<messageType>();
+      uint handlerId = IMessage.GetMessageId<messageType>();
 
       MessageHandlers msgHandlers;
       if (!messageHandlers.TryGetValue((uint)handlerId, out msgHandlers)) {
@@ -35,12 +35,12 @@ namespace TCPStreamServer {
         messageHandlers.Add(handlerId, msgHandlers);
       }
 
-      msgHandlers.addHandler(msgHandler);
+      msgHandlers.AddHandler(msgHandler);
       Console.WriteLine("Adding new handler delegate. \nFinished registering handler.");
 
     }
 
-    public static void handleData(long clientId, byte[] data) {
+    public static void HandleData(long clientId, byte[] data) {
       byte[] dataBuffer = (byte[])data.Clone();
 
       if (TCPStream.clients[clientId].buffer == null) {
@@ -48,59 +48,59 @@ namespace TCPStreamServer {
       }
 
       ByteBuffer clientBuffer = TCPStream.clients[clientId].buffer;
-      clientBuffer.writeBytes(dataBuffer);
+      clientBuffer.WriteBytes(dataBuffer);
 
-      if (clientBuffer.count() == 0) {
-        clientBuffer.clear();
+      if (clientBuffer.Count() == 0) {
+        clientBuffer.Clear();
         return;
       }
 
-      if (clientBuffer.length() >= 4) {
-        packetLength = clientBuffer.readLong(false);
+      if (clientBuffer.Length() >= 4) {
+        packetLength = clientBuffer.ReadLong(false);
         if (packetLength <= 0) {
-          clientBuffer.clear();
+          clientBuffer.Clear();
           return;
         }
       }
 
-      while (packetLength > 0 && packetLength <= clientBuffer.length() - 8) {
-        if (packetLength <= clientBuffer.length() - 8) {
-          clientBuffer.readLong();
-          data = clientBuffer.readBytes((int)packetLength);
-          handleDataPackets(clientId, data);
+      while (packetLength > 0 && packetLength <= clientBuffer.Length() - 8) {
+        if (packetLength <= clientBuffer.Length() - 8) {
+          clientBuffer.ReadLong();
+          data = clientBuffer.ReadBytes((int)packetLength);
+          HandleDataPackets(clientId, data);
         }
 
         packetLength = 0;
 
-        if (clientBuffer.length() >= 4) {
-          packetLength = clientBuffer.readLong(false);
+        if (clientBuffer.Length() >= 4) {
+          packetLength = clientBuffer.ReadLong(false);
           
           if (packetLength <= 0) {
-            clientBuffer.clear();
+            clientBuffer.Clear();
             return;
           }
         }
 
         if (packetLength <= 1) {
-          clientBuffer.clear();
+          clientBuffer.Clear();
         }
       }
     }
 
-    private static void handleDataPackets(long clientId, byte[] data) {
+    private static void HandleDataPackets(long clientId, byte[] data) {
       long packetId;
       ByteBuffer buffer = new ByteBuffer();
       MessageHandlers msgHandler;
       IMessageMaker msgMaker;
 
-      buffer.writeBytes(data);
-      packetId = buffer.readLong();
+      buffer.WriteBytes(data);
+      packetId = buffer.ReadLong();
       buffer.Dispose();
             
       if (messageMakers.TryGetValue((uint)packetId, out msgMaker)) {
-        IMessage message = msgMaker.fromBytes(data);
+        IMessage message = msgMaker.FromBytes(data);
         if (messageHandlers.TryGetValue((uint)packetId, out msgHandler)) {
-          msgHandler.handleMessage(clientId, message);
+          msgHandler.HandleMessage(clientId, message);
         } else {
           Console.WriteLine("We recieved a message who's handler was not registered.");
         }

@@ -26,12 +26,12 @@ class Client : MonoBehaviour {
 
   private void Update() {
     if (handleData == true) {
-      MessageHandling.handleData(recieveBytes);
+      MessageHandling.HandleData(recieveBytes);
       handleData = false;
     }
   }
 
-  public void connect() {
+  public void Connect() {
     Debug.Log("Attempting to connect to server");
 
     connection = new TcpClient();
@@ -40,13 +40,13 @@ class Client : MonoBehaviour {
     asyncBuffer = new byte[BUFFER_SIZE * 2];
 
     try {
-      connection.BeginConnect(IP_ADDRESS, PORT, new AsyncCallback(onConnectionEstablished), connection);
+      connection.BeginConnect(IP_ADDRESS, PORT, new AsyncCallback(OnConnectionEstablished), connection);
     } catch (Exception) {
       // TODO tell the user
     }
   }
 
-  private void onConnectionEstablished(IAsyncResult result) {
+  private void OnConnectionEstablished(IAsyncResult result) {
     try {
       connection.EndConnect(result);
 
@@ -57,7 +57,7 @@ class Client : MonoBehaviour {
         return;
       } else {
         stream = connection.GetStream();
-        stream.BeginRead(asyncBuffer, 0, BUFFER_SIZE * 2, onReceiveData, null);
+        stream.BeginRead(asyncBuffer, 0, BUFFER_SIZE * 2, OnReceiveData, null);
         isConnected = true;
         Debug.Log("Connected to server");
       }
@@ -69,7 +69,7 @@ class Client : MonoBehaviour {
     }
   }
 
-  private void onReceiveData(IAsyncResult result) {
+  private void OnReceiveData(IAsyncResult result) {
     try {
       int packetLength = stream.EndRead(result);
       recieveBytes = new byte[packetLength];
@@ -82,7 +82,7 @@ class Client : MonoBehaviour {
       }
 
       handleData = true;
-      stream.BeginRead(asyncBuffer, 0, 8192, onReceiveData, null);
+      stream.BeginRead(asyncBuffer, 0, 8192, OnReceiveData, null);
 
     } catch (Exception) {
       Debug.Log("Disconnected.");
@@ -91,14 +91,14 @@ class Client : MonoBehaviour {
     }
   }
 
-  private void sendData(byte[] data) {
+  private void SendData(byte[] data) {
     ByteBuffer buffer = new ByteBuffer();
-    buffer.writeLong(data.GetUpperBound(0) - data.GetLowerBound(0) + 1);
-    buffer.writeBytes(data);
-    stream.Write(buffer.toArray(), 0, buffer.toArray().Length);
+    buffer.WriteLong(data.GetUpperBound(0) - data.GetLowerBound(0) + 1);
+    buffer.WriteBytes(data);
+    stream.Write(buffer.ToArray(), 0, buffer.ToArray().Length);
   }
 
-  public void send(IMessage messageToSend) {
-    sendData(messageToSend.toBytes());
+  public void SendMessage(IMessage messageToSend) {
+    SendData(messageToSend.ToBytes());
   }
 }

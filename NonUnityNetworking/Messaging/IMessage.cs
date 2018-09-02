@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 
 public abstract class IMessage {
-  public abstract byte[] toBytes();
+  public abstract byte[] ToBytes();
 
-  public static uint getMessageId<messageType>() {
+  public static uint GetMessageId<messageType>() {
     string handlerName = typeof(messageType).Name;
     byte[] nameAsBytes = Encoding.ASCII.GetBytes(handlerName);
     return Crc32.Compute(nameAsBytes);
@@ -14,5 +14,5 @@ public abstract class IMessage {
 }
 
 public abstract class IMessageMaker {
-  public abstract IMessage fromBytes(byte[] data);
+  public abstract IMessage FromBytes(byte[] data);
 }

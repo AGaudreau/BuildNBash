@@ -15,22 +15,22 @@ public class TestMessage: IMessage {
     testMessageContent = testData;
   }
 
-  public override byte[] toBytes() {
+  public override byte[] ToBytes() {
     ByteBuffer messageBuffer = new ByteBuffer();
 
-    messageBuffer.writeLong(IMessage.getMessageId<TestMessage>());
-    messageBuffer.writeString(testMessageContent);
+    messageBuffer.WriteLong(IMessage.GetMessageId<TestMessage>());
+    messageBuffer.WriteString(testMessageContent);
 
-    return messageBuffer.toArray();
+    return messageBuffer.ToArray();
   }
 }
 
 public class TestMessageMaker: IMessageMaker {
-  public override IMessage fromBytes(byte[] data) {
+  public override IMessage FromBytes(byte[] data) {
     ByteBuffer messageBuffer = new ByteBuffer();
-    messageBuffer.writeBytes(data);
-    long msgTypeWeAlreadyKnow = messageBuffer.readLong(); // We need to read to move the reading pointer
+    messageBuffer.WriteBytes(data);
+    long msgTypeWeAlreadyKnow = messageBuffer.ReadLong(); // We need to read to move the reading pointer
 
-    return new TestMessage(messageBuffer.readString()); 
+    return new TestMessage(messageBuffer.ReadString()); 
   }
 }

@@ -9,11 +9,11 @@ public delegate void MessageHandler(long connectionId, IMessage msg);
 public class MessageHandlers {
   List<MessageHandler> handlers = new List<MessageHandler>();
 
-  public void addHandler(MessageHandler msgHandler) {
+  public void AddHandler(MessageHandler msgHandler) {
     handlers.Add(msgHandler);
   }
 
-  public void handleMessage(long clientId, IMessage msg) {
+  public void HandleMessage(long clientId, IMessage msg) {
     foreach (var item in handlers) {
       item.Invoke(clientId, msg);
     }

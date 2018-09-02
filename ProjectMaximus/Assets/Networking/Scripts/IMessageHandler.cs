@@ -5,11 +5,11 @@ public delegate void MessageHandler(IMessage msg);
 public class MessageHandlers {
   List<MessageHandler> handlers = new List<MessageHandler>();
 
-  public void addHandler(MessageHandler msgHandler) {
+  public void AddHandler(MessageHandler msgHandler) {
     handlers.Add(msgHandler);
   }
 
-  public void handleMessage(IMessage msg) {
+  public void HandleMessage(IMessage msg) {
     foreach (var item in handlers) {
       item.Invoke(msg);
     }

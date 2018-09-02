@@ -12,25 +12,21 @@ namespace TCPStreamServer {
 
     static void Main(string[] args) {
 
-      MessageHandling.init();
+      MessageHandling.Init();
       TCPStream stream = new TCPStream(clients);
       int connectionPort = 5555;
-      stream.startStream(connectionPort);
+      stream.StartStream(connectionPort);
 
       Array.Clear(clients, 0, clients.Length);
 
-
-
         // Main server loop
       while (true) {
-
         // This waits for a key to be pressed in the console, we might want to change this in the future?
         if (Console.ReadKey().Key == ConsoleKey.Escape)
           break;
 
-
         if (Console.ReadKey().Key == ConsoleKey.M) {
-          stream.send(0, new TestMessage("This Is A Test: If this were a real message, you would probably do something."));
+          stream.SendMessage(0, new TestMessage("This Is A Test: If this were a real message, you would probably do something."));
         }
       }
     }

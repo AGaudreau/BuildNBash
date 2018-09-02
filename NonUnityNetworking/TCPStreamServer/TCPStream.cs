@@ -14,18 +14,18 @@ namespace TCPStreamServer {
       clients = clientsArray;
     }
 
-    public void startStream(int streamPort) {
+    public void StartStream(int streamPort) {
       streamSocket = new TcpListener(IPAddress.Any, streamPort);
       streamSocket.Start();
-      streamSocket.BeginAcceptTcpClient(acceptedTcpClient, null);
+      streamSocket.BeginAcceptTcpClient(AcceptedTcpClient, null);
     }
 
-    public void acceptedTcpClient(IAsyncResult result) {
+    public void AcceptedTcpClient(IAsyncResult result) {
       TcpClient connectedClient = streamSocket.EndAcceptTcpClient(result);
       Console.WriteLine("Client " + connectedClient.Client.RemoteEndPoint.ToString() + " connected.");
 
       // After accepting the client connection, start listening for more client connections
-      streamSocket.BeginAcceptTcpClient(acceptedTcpClient, null);
+      streamSocket.BeginAcceptTcpClient(AcceptedTcpClient, null);
 
       for (int i = 0; i < clients.Length; ++i) {
         if (clients[i] == null) {
@@ -42,16 +42,16 @@ namespace TCPStreamServer {
     }
 
 
-    private void sendDataTo(int clientId, byte[] data) {
+    private void SendDataTo(int clientId, byte[] data) {
       ByteBuffer buffer = new ByteBuffer();
-      buffer.writeLong(data.GetUpperBound(0 - data.GetLowerBound(0)) + 1);
-      buffer.writeBytes(data);
-      clients[clientId].stream.BeginWrite(buffer.toArray(), 0, buffer.toArray().Length, null, null);
+      buffer.WriteLong(data.GetUpperBound(0 - data.GetLowerBound(0)) + 1);
+      buffer.WriteBytes(data);
+      clients[clientId].stream.BeginWrite(buffer.ToArray(), 0, buffer.ToArray().Length, null, null);
     }
 
 
-    public void send(int clientId, IMessage messageToSend) {
-      sendDataTo(clientId, messageToSend.toBytes());
+    public void SendMessage(int clientId, IMessage messageToSend) {
+      SendDataTo(clientId, messageToSend.ToBytes());
     }
   }
 }
