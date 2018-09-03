@@ -47,6 +47,11 @@ namespace TCPStreamServer {
     private void CloseConnection() {
       connection.Close();
       stream.Close();
+
+      Console.WriteLine("Client " + ip + " disconnected.");
+
+
+
     }
 
   }

@@ -16,10 +16,7 @@ class Client : MonoBehaviour {
 
   public byte[] recieveBytes;
   public bool handleData = false;
-
-  private string IP_ADDRESS = "127.0.0.1"; // Local host
-  private int PORT = 5555;
-
+  
   private void Awake() {
     instance = this;
   }
@@ -31,7 +28,10 @@ class Client : MonoBehaviour {
     }
   }
 
-  public void Connect() {
+  public void Connect(string ipAddress = "127.0.0.1", int port = 5555) {
+    if (isConnected)
+      return;
+
     Debug.Log("Attempting to connect to server");
 
     connection = new TcpClient();
@@ -40,10 +40,15 @@ class Client : MonoBehaviour {
     asyncBuffer = new byte[BUFFER_SIZE * 2];
 
     try {
-      connection.BeginConnect(IP_ADDRESS, PORT, new AsyncCallback(OnConnectionEstablished), connection);
+      connection.BeginConnect(ipAddress, port, new AsyncCallback(OnConnectionEstablished), connection);
     } catch (Exception) {
       // TODO tell the user
     }
+  }
+
+  public void Disconnect() {
+    connection.Close();
+    isConnected = false;
   }
 
   private void OnConnectionEstablished(IAsyncResult result) {
@@ -86,7 +91,7 @@ class Client : MonoBehaviour {
 
     } catch (Exception) {
       Debug.Log("Disconnected.");
-      Application.Quit();
+      //Application.Quit();
       return;
     }
   }

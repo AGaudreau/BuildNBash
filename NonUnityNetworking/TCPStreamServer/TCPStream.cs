@@ -26,7 +26,7 @@ namespace TCPStreamServer {
 
       // After accepting the client connection, start listening for more client connections
       streamSocket.BeginAcceptTcpClient(AcceptedTcpClient, null);
-
+      
       for (int i = 0; i < clients.Length; ++i) {
         if (clients[i] == null) {
           clients[i] = new Client();
