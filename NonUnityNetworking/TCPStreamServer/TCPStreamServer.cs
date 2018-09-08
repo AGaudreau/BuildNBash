@@ -14,7 +14,7 @@ namespace TCPStreamServer {
 
       MessageHandling.Init();
       TCPStream stream = new TCPStream(clients);
-      int connectionPort = 5555;
+      int connectionPort = 51001;
       stream.StartStream(connectionPort);
 
       Array.Clear(clients, 0, clients.Length);
