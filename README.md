@@ -1,1 +1,1 @@
-# ProjectMaximus
+# SideProject
