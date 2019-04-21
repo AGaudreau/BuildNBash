@@ -4,6 +4,7 @@
 [Bb]uild/
 [Bb]uilds/
 /MainProject/Assets/StoreAssets/*
+/MainProject/Assets/TextMesh Pro/*
 
 # Visual Studio cache directory
 .vs/
