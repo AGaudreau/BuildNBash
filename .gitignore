@@ -3,10 +3,7 @@
 [Oo]bj/
 [Bb]uild/
 [Bb]uilds/
-/MainProject/Assets/SteamVR/*
-/MainProject/Assets/Standard Assets/*
-/MainProject/Assets/TextMesh Pro/*
-/MainProject/Assets/SampleScenes/*
+/MainProject/Assets/StoreAssets/*
 
 # Visual Studio cache directory
 .vs/
