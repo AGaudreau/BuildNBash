@@ -5,14 +5,8 @@ using UnityEditor.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-  public void PlayGame()
-  {
-    EditorSceneManager.LoadScene(EditorSceneManager.GetActiveScene().buildIndex + 1);
-  }
-
   public void QuitGame()
   {
     Application.Quit();
   }
-
 }
