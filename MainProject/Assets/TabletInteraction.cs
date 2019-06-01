@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using UnityEngine.UI;
 using UnityEngine;
 
 public class TabletInteraction : MonoBehaviour
@@ -22,11 +21,13 @@ public class TabletInteraction : MonoBehaviour
           Debug.Log(hit.collider.gameObject);
 
           var localPoint = hit.textureCoord;
-          Ray tabletRay = tabletCamera.ViewportPointToRay(hit.textureCoord);
-          RaycastHit tabletHit;
+        //Ray tabletRay = tabletCamera.ViewportPointToRay(hit.textureCoord);
+        Ray tabletRay = tabletCamera.ScreenPointToRay(new Vector2(localPoint.x * tabletCamera.pixelWidth, localPoint.y * tabletCamera.pixelHeight));
+        RaycastHit tabletHit;
 
           if (Physics.Raycast(tabletRay, out tabletHit)) {
             Debug.Log(tabletHit.collider.gameObject.name);
+            tabletHit.transform.SendMessage("HitByRay");
           }
 
         }
