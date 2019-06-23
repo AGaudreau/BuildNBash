@@ -10,6 +10,7 @@ public class dragScript : MonoBehaviour
     Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, reach);
     Vector3 objPosition = Camera.main.ScreenToWorldPoint(mousePosition);
     transform.position = objPosition;
+    transform.SendMessage("grabbed");
   }
 
   // Update is called once per frame

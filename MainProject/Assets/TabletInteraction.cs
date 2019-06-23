@@ -42,7 +42,7 @@ public class TabletInteraction : MonoBehaviour
         
         if (Physics.Raycast(tabletRay, out tabletHit))
         {
-          //Debug.Log(tabletHit.collider.gameObject.name);
+          Debug.Log(tabletHit.collider.gameObject.name);
           tabletHit.transform.SendMessage("HitByRay");
         }
 
