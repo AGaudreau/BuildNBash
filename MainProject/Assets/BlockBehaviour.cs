@@ -15,7 +15,10 @@ public class BlockBehaviour : MonoBehaviour
 
   public float radius = .5f;
   public float halfWidth = .08f;
+  public GameObject sphereIndacator;
   private Collider[] hitCollider;
+  private List<Collider> blocksInRange;
+
   
   bool collision = false;
 
@@ -68,6 +71,7 @@ public class BlockBehaviour : MonoBehaviour
           //Debug.Log("Name of collision object: " + item.transform.parent.name 
           // + " Name of selected object: " + transform.name);
           collision = true;
+          blocksInRange.Add(item);
         }
       }
       else
