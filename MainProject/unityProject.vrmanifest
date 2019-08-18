@@ -1,0 +1,16 @@
+{
+  "source": "Unity",
+  "applications": [
+    {
+      "app_key": "application.generated.unity.mainproject.exe",
+      "launch_type": "url",
+      "url": "steam://launch/",
+      "action_manifest_path": "D:\\Side Project\\BuildNBash\\MainProject\\actions.json",
+      "strings": {
+        "en_us": {
+          "name": "MainProject [Testing]"
+        }
+      }
+    }
+  ]
+}
